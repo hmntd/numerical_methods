@@ -21,6 +21,7 @@ namespace numerical_methods
         public double Step { get; set; }
         public double ReferenceValue { get; set; }
         public int Counter { get; set; } = 0;
+        public bool IsCalculating { get; set; } = true;
         public ObservableCollection<Result> Results { get; set; } = new ObservableCollection<Result>();
         public ICommand Calculate_Click { get; }
         public MainViewModel()
@@ -31,6 +32,9 @@ namespace numerical_methods
         {
             try
             {
+                IsCalculating = false;
+                OnPropertyChanged(nameof(IsCalculating));
+
                 if (B < A || Step < 0 || Step > (B - A))
                 {
                     MessageBox.Show("Функція має недопустимі значення", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -78,6 +82,11 @@ namespace numerical_methods
             } catch (Exception ex)
             {
                 MessageBox.Show($"Сталася помилка: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsCalculating = true;
+                OnPropertyChanged(nameof(IsCalculating));
             }
         }
 

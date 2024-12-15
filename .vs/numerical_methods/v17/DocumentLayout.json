@@ -7,6 +7,10 @@
       "RelativeMoniker": "D:0:0:{F6AB5414-3203-4D88-BE98-6263F37982C1}|numerical_methods.csproj|solutionrelative:mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{F6AB5414-3203-4D88-BE98-6263F37982C1}|numerical_methods.csproj|c:\\users\\bazav\\downloads\\numerical_methods\\result.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F6AB5414-3203-4D88-BE98-6263F37982C1}|numerical_methods.csproj|solutionrelative:result.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{F6AB5414-3203-4D88-BE98-6263F37982C1}|numerical_methods.csproj|C:\\Users\\bazav\\Downloads\\numerical_methods\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{F6AB5414-3203-4D88-BE98-6263F37982C1}|numerical_methods.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
@@ -18,8 +22,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Result.cs",
+              "DocumentMoniker": "C:\\Users\\bazav\\Downloads\\numerical_methods\\Result.cs",
+              "RelativeDocumentMoniker": "Result.cs",
+              "ToolTip": "C:\\Users\\bazav\\Downloads\\numerical_methods\\Result.cs",
+              "RelativeToolTip": "Result.cs",
+              "ViewState": "AQIAAAgAAAAAAAAAAAAowBAAAABWAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-14T23:31:34.188Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -28,14 +45,14 @@
               "RelativeDocumentMoniker": "MainViewModel.cs",
               "ToolTip": "C:\\Users\\bazav\\Downloads\\numerical_methods\\MainViewModel.cs",
               "RelativeToolTip": "MainViewModel.cs",
-              "ViewState": "AQIAABUAAAAAAAAAAAA7wBcAAAA2AAAA",
+              "ViewState": "AQIAAJQAAAAAAAAAAAAmwKcAAAAaAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-10T23:30:24.874Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\bazav\\Downloads\\numerical_methods\\MainWindow.xaml",
               "RelativeDocumentMoniker": "MainWindow.xaml",

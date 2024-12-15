@@ -52,9 +52,10 @@
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Метод" DisplayMemberBinding="{Binding Method}" Width="200" />
-                        <GridViewColumn Header="Кількість елементів" DisplayMemberBinding="{Binding ElementCount}" Width="150" />
-                        <GridViewColumn Header="Витрачений час, мс" DisplayMemberBinding="{Binding Time}" Width="200" />
-                        <GridViewColumn Header="Відносна похибка, %" DisplayMemberBinding="{Binding ErrorPercent}" Width="200" />
+                        <GridViewColumn Header="Значення інтегралу"  DisplayMemberBinding="{Binding ResultIntegral}" Width="175"/>
+                        <GridViewColumn Header="Кількість елементів" DisplayMemberBinding="{Binding ElementCount}" Width="100" />
+                        <GridViewColumn Header="Витрачений час, мс" DisplayMemberBinding="{Binding Time}" Width="100" />
+                        <GridViewColumn Header="Відносна похибка, %" DisplayMemberBinding="{Binding ErrorPercent}" Width="175" />
                     </GridView>
                 </ListView.View>
             </ListView>

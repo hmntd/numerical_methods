@@ -11,13 +11,15 @@ namespace numerical_methods
         public string Method { get; set; }
         public int ElementCount { get; set; }
         public long Time { get; set; }
-        public double ErrorPercent { get; set; }
+        public decimal ResultIntegral { get; set; }
+        public decimal ErrorPercent { get; set; }
         public Result() { }
-        public Result(string method, int elementCount, long time, double errorPercent)
+        public Result(string method, int elementCount, long time, decimal res, decimal errorPercent)
         {
             Method = method;
             ElementCount = elementCount;
             Time = time;
+            ResultIntegral = res;
             ErrorPercent = errorPercent;
         }
     }

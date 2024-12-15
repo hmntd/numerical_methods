@@ -16,18 +16,20 @@ namespace numerical_methods
     public class MainViewModel : INotifyPropertyChanged
     {
         public string Function { get; set; }
-        public double A { get; set; }
-        public double B { get; set; }
-        public double Step { get; set; }
-        public double ReferenceValue { get; set; }
+        public decimal A { get; set; }
+        public decimal B { get; set; }
+        public decimal Step { get; set; }
+        public decimal ReferenceValue { get; set; }
         public int Counter { get; set; } = 0;
         public bool IsCalculating { get; set; } = true;
         public ObservableCollection<Result> Results { get; set; } = new ObservableCollection<Result>();
         public ICommand Calculate_Click { get; }
+
         public MainViewModel()
         {
             Calculate_Click = new RelayCommand(Calculate);
         }
+
         private async void Calculate()
         {
             try
@@ -35,18 +37,9 @@ namespace numerical_methods
                 IsCalculating = false;
                 OnPropertyChanged(nameof(IsCalculating));
 
-                if (B < A || Step < 0 || Step > (B - A))
+                if (B < A || Step <= 0 || Step > (B - A))
                 {
                     MessageBox.Show("Функція має недопустимі значення", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
-                var points = Enumerable.Range(0, (int)((B - A) / Step) + 1)
-                       .Select(i => A + i * Step)
-                       .ToArray();
-
-                if (points.Any(x => !IsValid(Function, x)))
-                {
-                    MessageBox.Show("Функція має недопустиме значення в межах існування.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -57,16 +50,17 @@ namespace numerical_methods
                 var tasks = methods.Select(async method =>
                 {
                     Stopwatch stopwatch = Stopwatch.StartNew();
-                    double integral = await Task.Run(() => CalculateIntegral(method, points));
+                    decimal integral = await Task.Run(() => CalculateIntegral(method));
                     stopwatch.Stop();
 
-                    double error = Math.Abs(integral - ReferenceValue) / ReferenceValue * 100;
+                    decimal error = Math.Abs(integral - ReferenceValue) / ReferenceValue * 100;
 
                     return new Result
                     {
                         Method = method,
-                        ElementCount = points.Length,
+                        ElementCount = (int)((B - A) / Step),
                         Time = stopwatch.ElapsedMilliseconds,
+                        ResultIntegral = integral,
                         ErrorPercent = error
                     };
                 });
@@ -79,7 +73,8 @@ namespace numerical_methods
                 }
 
                 OnPropertyChanged(nameof(Results));
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show($"Сталася помилка: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -89,88 +84,111 @@ namespace numerical_methods
                 OnPropertyChanged(nameof(IsCalculating));
             }
         }
+        private IEnumerable<decimal> GenerateSequence(decimal start, decimal end, decimal step)
+        {
+            int precision = GetDecimalPlaces(step);
+            for (decimal value = start; value <= end; value += step)
+            {
+                yield return Math.Round(value, precision);
+            }
+        }
 
-        private bool IsValid(string function, double x)
+        private int GetDecimalPlaces(decimal value)
+        {
+            string valueStr = value.ToString("G29", System.Globalization.CultureInfo.InvariantCulture);
+            int decimalIndex = valueStr.IndexOf('.');
+            return decimalIndex >= 0 ? valueStr.Length - decimalIndex - 1 : 0;
+        }
+
+        private bool IsValid(string function, decimal x)
         {
             try
             {
-                double result = Evaluate(function, x);
-                return !double.IsNaN(result) && !double.IsInfinity(result);
+                decimal result = Evaluate(function, x);
+                return result != decimal.MaxValue || result != decimal.MinValue;
             }
             catch
             {
                 return false;
             }
         }
-        private double CalculateIntegral(string method, double[] points)
+
+        private decimal CalculateIntegral(string method)
         {
-            double result = 0;
+            decimal result = 0;
+            decimal previousValue = 0;
 
             switch (method)
             {
                 case "Ліві прямокутники":
-                    for (int i = 0; i < points.Length - 1; i++)
+                    for (decimal x = A; x <= B - Step; x += Step)
                     {
-                        result += Evaluate(Function, points[i]) * Step;
+                        result += Evaluate(Function, x) * Step;
                         Counter++;
+                        OnPropertyChanged(nameof(Counter));
                     }
-                    OnPropertyChanged(nameof(Counter));
                     break;
                 case "Праві прямокутники":
-                    for (int i = 1; i < points.Length; i++)
+                    for (decimal x = A + Step; x <= B; x += Step)
                     {
-                        result += Evaluate(Function, points[i]) * Step;
+                        result += Evaluate(Function, x) * Step;
                         Counter++;
+                        OnPropertyChanged(nameof(Counter));
                     }
                     break;
                 case "Середні прямокутники":
-                    for (int i = 0; i < points.Length - 1; i++)
+                    for (decimal x = A; x <= B - Step; x += Step)
                     {
-                        result += Evaluate(Function, (points[i] + points[i + 1]) / 2) * Step;
+                        result += Evaluate(Function, x + Step / 2) * Step;
                         Counter++;
+                        OnPropertyChanged(nameof(Counter));
                     }
-                    OnPropertyChanged(nameof(Counter));
                     break;
                 case "Трапеції":
-                    for (int i = 0; i < points.Length - 1; i++)
+                    previousValue = Evaluate(Function, A);
+                    for (decimal x = A + Step; x <= B; x += Step)
                     {
-                        result += (Evaluate(Function, points[i]) + Evaluate(Function, points[i + 1])) / 2 * Step;
+                        var currentValue = Evaluate(Function, x);
+                        result += (previousValue + currentValue) / 2 * Step;
+                        previousValue = currentValue;
                         Counter++;
+                        OnPropertyChanged(nameof(Counter));
                     }
-                    OnPropertyChanged(nameof(Counter));
                     break;
                 case "Сімпсона":
-                    for (int i = 0; i < points.Length - 1; i += 2)
+                    result = Evaluate(Function, A) + Evaluate(Function, B);
+                    int index = 1;
+                    for (decimal x = A + Step; x < B; x += Step, index++)
                     {
-                        if (i + 2 < points.Length)
-                        {
-                            double h = (points[i + 2] - points[i]) / 2;
-                            result += (h / 3) * (Evaluate(Function, points[i]) + 4 * Evaluate(Function, points[i + 1]) + Evaluate(Function, points[i + 2]));
-                        }
+                        result += (index % 2 == 0 ? 2 : 4) * Evaluate(Function, x);
                         Counter++;
+                        OnPropertyChanged(nameof(Counter));
                     }
-                    OnPropertyChanged(nameof(Counter));
+                    result *= Step / 3;
                     break;
             }
+
             return result;
         }
-        private double Evaluate(string function, double x)
+
+
+        private decimal Evaluate(string function, decimal x)
         {
             try
             {
                 var parsedExpression = Infix.ParseOrThrow(function);
-
                 var symbolValues = new Dictionary<string, FloatingPoint>
         {
-            { "x", (FloatingPoint)x }
+            { "x", (FloatingPoint)(double)x }
         };
                 var result = MathNet.Symbolics.Evaluate.Evaluate(symbolValues, parsedExpression);
 
                 if (result is FloatingPoint floatingPointResult)
                 {
-                    double realValue = floatingPointResult.RealValue;
-                    if (double.IsNaN(realValue) || double.IsInfinity(realValue))
-                        throw new Exception("Результат є недійсним числом (NaN або Infinity).");
+                    decimal realValue = (decimal)floatingPointResult.RealValue;
+
+                    if (realValue == decimal.MaxValue || realValue == decimal.MinValue)
+                        throw new Exception("Результат є недійсним числом (Zero, MaxValue, MinValue).");
 
                     return realValue;
                 }
@@ -182,6 +200,8 @@ namespace numerical_methods
                 throw new Exception($"Помилка при обчисленні функції: {ex.Message}");
             }
         }
+
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
